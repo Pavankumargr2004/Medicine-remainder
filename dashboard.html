@@ -1,0 +1,81 @@
+{% extends 'reminders/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Today's Reminders ({{ today|date:"F j, Y" }})</h4>
+            </div>
+            <div class="card-body">
+                {% if today_reminders %}
+                    <div class="list-group">
+                        {% for reminder in today_reminders %}
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ reminder.medication.name }}</h5>
+                                    <small class="badge bg-primary rounded-pill">{{ reminder.time|time:"g:i A" }}</small>
+                                </div>
+                                <p class="mb-1">{{ reminder.medication.dosage }} {{ reminder.medication.dosage_unit }}</p>
+                                {% if reminder.notes %}
+                                    <small class="text-muted">{{ reminder.notes }}</small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <p class="lead mb-0">No reminders for today!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="fas fa-pills me-2"></i>Your Medications</h4>
+            </div>
+            <div class="card-body">
+                {% if medications %}
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for medication in medications %}
+                            <div class="col">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ medication.name }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">{{ medication.dosage }} {{ medication.dosage_unit }}</h6>
+                                        {% if medication.description %}
+                                            <p class="card-text small">{{ medication.description }}</p>
+                                        {% endif %}
+                                        <div class="small text-muted">
+                                            <div>Start date: {{ medication.start_date }}</div>
+                                            {% if medication.end_date %}
+                                                <div>End date: {{ medication.end_date }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="{% url 'medication-update' medication.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <a href="{% url 'add-reminder' medication.id %}" class="btn btn-sm btn-outline-info">Add Reminder</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <p>You haven't added any medications yet.</p>
+                        <a href="{% url 'medication-create' %}" class="btn btn-primary">Add Medication</a>
+                    </div>
+                {% endif %}
+            </div>
+            {% if medications %}
+                <div class="card-footer text-center">
+                    <a href="{% url 'medication-create' %}" class="btn btn-primary">Add New Medication</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
